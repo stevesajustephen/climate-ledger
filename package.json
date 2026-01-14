@@ -12,7 +12,6 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/node": "^25.0.8",
-    "aws-cdk": "^2.1100.3",
     "aws-cdk-lib": "^2.234.1",
     "constructs": "^10.4.4",
     "ts-node": "^10.9.2",
