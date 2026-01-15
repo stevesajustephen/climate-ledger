@@ -12,5 +12,5 @@ const lambdaStack = new LambdaStack(app, "LambdaStack", {
 });
 
 new ApiStack(app, "ApiStack", {
-  helloLambdaIntegration: lambdaStack.helloLambdaIntegration,
+  climateLedgerLambdaIntegration: lambdaStack.climateLedgerLambdaIntegration,
 });

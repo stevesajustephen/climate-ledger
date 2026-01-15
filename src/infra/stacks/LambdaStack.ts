@@ -1,6 +1,6 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
-import { ITable, Table } from "aws-cdk-lib/aws-dynamodb";
+import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
@@ -11,20 +11,26 @@ interface LambdaStackProps extends StackProps {
 }
 
 export class LambdaStack extends Stack {
-  public readonly helloLambdaIntegration: LambdaIntegration;
+  public readonly climateLedgerLambdaIntegration: LambdaIntegration;
 
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    const helloLambda = new NodejsFunction(this, "HelloLambda", {
-      runtime: Runtime.NODEJS_20_X,
-      handler: "handler",
-      entry: join(__dirname, "../../services/hello.ts"),
-      environment: {
-        TABLE_NAME: props.climateLedgerTable?.tableName,
-      },
-    });
+    const climateLedgerLambda = new NodejsFunction(
+      this,
+      "ClimateLedgerLambda",
+      {
+        runtime: Runtime.NODEJS_20_X,
+        handler: "handler",
+        entry: join(__dirname, "../../services/climateLedger/handler.ts"),
+        environment: {
+          TABLE_NAME: props.climateLedgerTable?.tableName,
+        },
+      }
+    );
 
-    this.helloLambdaIntegration = new LambdaIntegration(helloLambda);
+    this.climateLedgerLambdaIntegration = new LambdaIntegration(
+      climateLedgerLambda
+    );
   }
 }

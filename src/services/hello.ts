@@ -10,7 +10,7 @@ async function handler(event: APIGatewayProxyEvent, context: Context) {
     statusCode: 200,
     body: JSON.stringify(`hwloo from lambda!!! this is the ID! ${uuidv4()}`),
   };
-  console.log(event);
+  console.log(event, "HELLLO");
   return response;
 }
 

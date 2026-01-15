@@ -4,7 +4,7 @@ import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 
 interface ApiStackProps extends StackProps {
-  helloLambdaIntegration: LambdaIntegration;
+  climateLedgerLambdaIntegration: LambdaIntegration;
 }
 
 export class ApiStack extends Stack {
@@ -12,7 +12,8 @@ export class ApiStack extends Stack {
     super(scope, id, props);
 
     const api = new RestApi(this, "ClimateApi");
-    const climateResource = api.root.addResource("climate");
-    climateResource.addMethod("GET", props.helloLambdaIntegration);
+    const climateResource = api.root.addResource("climateLedger");
+    climateResource.addMethod("GET", props.climateLedgerLambdaIntegration);
+    climateResource.addMethod("POST", props.climateLedgerLambdaIntegration);
   }
 }
