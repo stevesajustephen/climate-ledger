@@ -1,4 +1,16 @@
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { handler } from "../src/services/climate-ledger/handler";
 
-handler({} as APIGatewayProxyEvent, {} as Context);
+handler(
+  {
+    httpMethod: "POST",
+    body: {
+      batchId: 1,
+      factoryId: "ABC",
+      totalKwh: 10000,
+      totalUnits: 1000,
+      gridFactor: 1,
+    },
+  } as unknown as APIGatewayProxyEvent,
+  {} as Context
+);

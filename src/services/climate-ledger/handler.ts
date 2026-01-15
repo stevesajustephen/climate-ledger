@@ -7,7 +7,7 @@ import {
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ingestProductinData } from "./ingest-production-data";
 
-const dbClient = new DynamoDBClient({ region: "REGION" });
+const dbClient = new DynamoDBClient({});
 
 async function handler(
   event: APIGatewayProxyEvent,
