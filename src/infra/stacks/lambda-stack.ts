@@ -16,13 +16,14 @@ export class LambdaStack extends Stack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    const climateLedgerLambda = new NodejsFunction(
+    const ingestProductionLambda = new NodejsFunction(
       this,
-      "ClimateLedgerLambda",
+      "IngestProductionHandler",
       {
+        functionName: "climate-ledger-ingest-production",
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
-        entry: join(__dirname, "../../services/climateLedger/handler.ts"),
+        entry: join(__dirname, "../../services/climate-ledger/handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
         },
@@ -30,7 +31,7 @@ export class LambdaStack extends Stack {
     );
 
     this.climateLedgerLambdaIntegration = new LambdaIntegration(
-      climateLedgerLambda
+      ingestProductionLambda
     );
   }
 }

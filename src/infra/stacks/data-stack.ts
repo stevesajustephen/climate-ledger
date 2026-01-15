@@ -17,7 +17,7 @@ export class DataStack extends Stack {
         name: "sk",
         type: AttributeType.STRING,
       },
-      tableName: "ClimateLedgerTable",
+      tableName: "climate-ledger-table",
     });
     this.climateLedgerTable = climateLedgerTable;
   }
