@@ -2,6 +2,7 @@ import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { validateAsIngestProdEntry } from "../shared/validator";
+import { bodyParser } from "../shared/utils";
 
 export async function ingestProductinData(
   event: APIGatewayProxyEvent,
@@ -9,7 +10,7 @@ export async function ingestProductinData(
 ): Promise<APIGatewayProxyResult> {
   const ddbDocClient = DynamoDBDocumentClient.from(dbClient);
 
-  const productionData = JSON.parse(event.body);
+  const productionData = bodyParser(event.body);
 
   validateAsIngestProdEntry(productionData);
   const { batchId, factoryId, totalKwh, totalUnits, gridFactor } =

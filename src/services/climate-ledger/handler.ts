@@ -6,7 +6,7 @@ import {
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ingestProductinData } from "./ingest-production-data";
-import { MissingFieldError } from "../shared/validator";
+import { JsonError, MissingFieldError } from "../shared/validator";
 
 const dbClient = new DynamoDBClient({});
 
@@ -31,15 +31,22 @@ async function handler(
     }
   } catch (error) {
     console.log(error);
+
     if (error instanceof MissingFieldError) {
       return {
         statusCode: 400,
-        body: JSON.stringify(error?.message),
+        body: error?.message,
+      };
+    }
+    if (error instanceof JsonError) {
+      return {
+        statusCode: 400,
+        body: error?.message,
       };
     }
     return {
       statusCode: 500,
-      body: JSON.stringify(error?.message),
+      body: error?.message,
     };
   }
 }

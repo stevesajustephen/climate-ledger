@@ -6,6 +6,8 @@ export class MissingFieldError extends Error {
   }
 }
 
+export class JsonError extends Error {}
+
 export function validateAsIngestProdEntry(arg: any) {
   if ((arg as IngestProdEntry).batchId == undefined) {
     throw new MissingFieldError("batchId");
