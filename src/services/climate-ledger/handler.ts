@@ -4,21 +4,38 @@ import {
   Context,
 } from "aws-lambda";
 
-async function handler(event: APIGatewayProxyEvent, context: Context) {
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { ingestProductinData } from "./ingest-production-data";
+
+const dbClient = new DynamoDBClient({ region: "REGION" });
+
+async function handler(
+  event: APIGatewayProxyEvent,
+  context: Context
+): Promise<APIGatewayProxyResult> {
   let message: string;
 
-  switch (event.httpMethod) {
-    case "GET": {
-      message = "hello from get";
-      break;
-    }
-    case "POST": {
-      message = "hello from post";
-      break;
-    }
+  try {
+    switch (event.httpMethod) {
+      case "GET": {
+        message = "hello from get";
+        break;
+      }
+      case "POST": {
+        const response = await ingestProductinData(event, dbClient);
+        return response;
+      }
 
-    default:
-      break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.log(error);
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify(error.message),
+    };
   }
   const response: APIGatewayProxyResult = {
     statusCode: 200,
