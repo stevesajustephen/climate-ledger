@@ -22,7 +22,7 @@ async function handler(event: APIGatewayProxyEvent, context: Context) {
   }
   const response: APIGatewayProxyResult = {
     statusCode: 200,
-    body: JSON.stringify(`hwloo from lambda!!! this is the ID!`),
+    body: JSON.stringify(message),
   };
   return response;
 }
