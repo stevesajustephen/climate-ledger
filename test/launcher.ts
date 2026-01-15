@@ -5,7 +5,6 @@ handler(
   {
     httpMethod: "POST",
     body: JSON.stringify({
-      batchId: 1,
       factoryId: "ABC",
       totalKwh: 10000,
       totalUnits: 1000,
@@ -13,4 +12,8 @@ handler(
     }),
   } as unknown as APIGatewayProxyEvent,
   {} as Context
-);
+)
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => console.log("error is ", err));
