@@ -3,8 +3,8 @@ import { OAuthScope, UserPool, UserPoolClient } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
 
 export class AuthStack extends Stack {
-  private userPool: UserPool;
-  private userPoolClient: UserPoolClient;
+  public userPool: UserPool;
+  public userPoolClient: UserPoolClient;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
