@@ -1,14 +1,38 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { AttributeType, ITable, Table } from "aws-cdk-lib/aws-dynamodb";
+import {
+  BlockPublicAccess,
+  Bucket,
+  HttpMethods,
+  IBucket,
+} from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 
 export class DataStack extends Stack {
   public readonly climateLedgerTable: ITable;
 
+  public readonly evidenceBucket: IBucket;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const climateLedgerTable = new Table(this, "ClimateLedgerTable", {
+    this.evidenceBucket = new Bucket(this, "EvidenceBucket", {
+      bucketName: `evidence-bucket-${Stack.of(this).account}`,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      cors: [
+        {
+          allowedMethods: [HttpMethods.GET, HttpMethods.PUT],
+          allowedOrigins: ["http://localhost:5173"],
+          allowedHeaders: ["*"],
+        },
+      ],
+    });
+
+    new CfnOutput(this, "BucketName", {
+      value: this.evidenceBucket.bucketName,
+    });
+
+    this.climateLedgerTable = new Table(this, "ClimateLedgerTable", {
       partitionKey: {
         name: "pk",
         type: AttributeType.STRING,
@@ -19,6 +43,5 @@ export class DataStack extends Stack {
       },
       tableName: "climate-ledger-table",
     });
-    this.climateLedgerTable = climateLedgerTable;
   }
 }
