@@ -6,6 +6,7 @@ import {
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ingestProductinData } from "./ingest-production-data";
+import { JsonError, MissingFieldError } from "../shared/validator";
 
 const dbClient = new DynamoDBClient({});
 
@@ -25,23 +26,29 @@ async function handler(
         const response = await ingestProductinData(event, dbClient);
         return response;
       }
-
       default:
         break;
     }
   } catch (error) {
     console.log(error);
 
+    if (error instanceof MissingFieldError) {
+      return {
+        statusCode: 400,
+        body: error?.message,
+      };
+    }
+    if (error instanceof JsonError) {
+      return {
+        statusCode: 400,
+        body: error?.message,
+      };
+    }
     return {
       statusCode: 500,
-      body: JSON.stringify(error.message),
+      body: error?.message,
     };
   }
-  const response: APIGatewayProxyResult = {
-    statusCode: 200,
-    body: JSON.stringify(message),
-  };
-  return response;
 }
 
 export { handler };
