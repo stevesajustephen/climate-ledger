@@ -2,12 +2,21 @@ import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { validateAsIngestProdEntry } from "../shared/validator";
-import { bodyParser } from "../shared/utils";
+import { bodyParser, isAPartner } from "../shared/utils";
 
 export async function ingestProductinData(
   event: APIGatewayProxyEvent,
   dbClient: DynamoDBClient
 ): Promise<APIGatewayProxyResult> {
+  const isAuthorized = isAPartner(event);
+
+  if (!isAuthorized) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify("Not authorized!"),
+    };
+  }
+
   const ddbDocClient = DynamoDBDocumentClient.from(dbClient);
 
   const productionData = bodyParser(event.body);

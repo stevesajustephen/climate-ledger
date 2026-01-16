@@ -8,3 +8,12 @@ export function bodyParser(arg: string) {
     return new JsonError(error.message);
   }
 }
+
+export function isAPartner(event: APIGatewayProxyEvent) {
+  const groups = event.requestContext.authorizer?.claims["cognito:groups"];
+
+  if (groups) {
+    return (groups as string).includes("partner-ABC");
+  }
+  return false;
+}

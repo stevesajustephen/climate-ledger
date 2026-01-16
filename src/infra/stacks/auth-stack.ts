@@ -1,16 +1,25 @@
 import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
-import { OAuthScope, UserPool, UserPoolClient } from "aws-cdk-lib/aws-cognito";
+import {
+  CfnUserPoolGroup,
+  OAuthScope,
+  UserPool,
+  UserPoolClient,
+  UserPoolGroup,
+} from "aws-cdk-lib/aws-cognito";
+import { CfnUserGroup } from "aws-cdk-lib/aws-elasticache";
 import { Construct } from "constructs";
 
 export class AuthStack extends Stack {
   private userPool: UserPool;
   private userPoolClient: UserPoolClient;
+  private supplierPartnerGroup: UserPoolGroup;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.createUserPool();
     this.createUserPoolClient();
+    this.createSupplierPartnerGroup();
   }
 
   getUserPool(): UserPool {
@@ -48,6 +57,13 @@ export class AuthStack extends Stack {
     });
     new CfnOutput(this, "ClimateLedgerClientId", {
       value: this.userPoolClient.userPoolClientId,
+    });
+  }
+
+  private createSupplierPartnerGroup() {
+    new CfnUserPoolGroup(this, "SupplyPartners", {
+      userPoolId: this.userPool.userPoolId,
+      groupName: "partner-ABC",
     });
   }
 }
