@@ -12,8 +12,9 @@ const lambdaStack = new LambdaStack(app, "LambdaStack", {
   climateLedgerTable: dataStack.climateLedgerTable,
 });
 
+const authStack = new AuthStack(app, "AuthStack");
+
 new ApiStack(app, "ApiStack", {
   climateLedgerLambdaIntegration: lambdaStack.climateLedgerLambdaIntegration,
+  userPool: authStack.getUserPool(),
 });
-
-new AuthStack(app, "AuthStack");

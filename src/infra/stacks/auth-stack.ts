@@ -13,6 +13,10 @@ export class AuthStack extends Stack {
     this.createUserPoolClient();
   }
 
+  getUserPool(): UserPool {
+    return this.userPool;
+  }
+
   private createUserPool() {
     this.userPool = new UserPool(this, "ClimateLedgerUserPool", {
       userPoolName: "climate-ledger-users",
