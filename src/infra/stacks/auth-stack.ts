@@ -1,25 +1,40 @@
 import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import {
+  CfnIdentityPool,
+  CfnIdentityPoolRoleAttachment,
   CfnUserPoolGroup,
   OAuthScope,
   UserPool,
   UserPoolClient,
-  UserPoolGroup,
 } from "aws-cdk-lib/aws-cognito";
-import { CfnUserGroup } from "aws-cdk-lib/aws-elasticache";
+import {
+  Effect,
+  FederatedPrincipal,
+  PolicyStatement,
+  Role,
+} from "aws-cdk-lib/aws-iam";
+import { IBucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
+
+interface AuthStackProps extends StackProps {
+  evidenceBucket: IBucket;
+}
 
 export class AuthStack extends Stack {
   private userPool: UserPool;
   private userPoolClient: UserPoolClient;
-  private supplierPartnerGroup: UserPoolGroup;
+  private identityPool: CfnIdentityPool;
+  private authenticatedRole: Role;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: AuthStackProps) {
     super(scope, id, props);
 
     this.createUserPool();
     this.createUserPoolClient();
     this.createSupplierPartnerGroup();
+    this.createIdentityPool();
+    this.createRole(props.evidenceBucket);
+    this.attachRole();
   }
 
   getUserPool(): UserPool {
@@ -64,6 +79,59 @@ export class AuthStack extends Stack {
     new CfnUserPoolGroup(this, "SupplyPartners", {
       userPoolId: this.userPool.userPoolId,
       groupName: "partner-ABC",
+    });
+  }
+
+  private createIdentityPool() {
+    this.identityPool = new CfnIdentityPool(this, "climateLedgerIdentityPool", {
+      identityPoolName: "climate-ledger-identity",
+      allowUnauthenticatedIdentities: false,
+      cognitoIdentityProviders: [
+        {
+          clientId: this.userPoolClient.userPoolClientId,
+          providerName: this.userPool.userPoolProviderName,
+        },
+      ],
+    });
+
+    new CfnOutput(this, "climateLedgerIdentityPoolId", {
+      value: this.identityPool.ref,
+    });
+  }
+
+  private createRole(evidenceBucket: IBucket) {
+    this.authenticatedRole = new Role(this, "PartnerRole", {
+      assumedBy: new FederatedPrincipal("cognito-identity.amazonaws.com", {
+        StringEquals: {
+          "cognito-identity.amazonaws.com:aud": this.identityPool.ref,
+        },
+        "ForAnyValue:StringLike": {
+          "cognito-identity.amazonaws.com:amr": "authenticated",
+        },
+      }),
+    });
+    this.authenticatedRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ["s3:PutObject"],
+        resources: [evidenceBucket.bucketArn + "/*"],
+      })
+    );
+  }
+
+  private attachRole() {
+    new CfnIdentityPoolRoleAttachment(this, "RoleAttachment", {
+      identityPoolId: this.identityPool.ref,
+      roles: {
+        authenticated: this.authenticatedRole.roleArn,
+      },
+      roleMappings: {
+        adminsMapping: {
+          type: "Token",
+          ambiguousRoleResolution: "AuthenticatedRole",
+          identityProvider: `${this.userPool.userPoolProviderName}:${this.userPoolClient.userPoolClientId}`,
+        },
+      },
     });
   }
 }
