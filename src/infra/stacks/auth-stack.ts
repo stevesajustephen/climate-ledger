@@ -101,20 +101,24 @@ export class AuthStack extends Stack {
 
   private createRole(evidenceBucket: IBucket) {
     this.authenticatedRole = new Role(this, "PartnerRole", {
-      assumedBy: new FederatedPrincipal("cognito-identity.amazonaws.com", {
-        StringEquals: {
-          "cognito-identity.amazonaws.com:aud": this.identityPool.ref,
+      assumedBy: new FederatedPrincipal(
+        "cognito-identity.amazonaws.com",
+        {
+          StringEquals: {
+            "cognito-identity.amazonaws.com:aud": this.identityPool.ref,
+          },
+          "ForAnyValue:StringLike": {
+            "cognito-identity.amazonaws.com:amr": "authenticated",
+          },
         },
-        "ForAnyValue:StringLike": {
-          "cognito-identity.amazonaws.com:amr": "authenticated",
-        },
-      }),
+        "sts:AssumeRoleWithWebIdentity"
+      ),
     });
     this.authenticatedRole.addToPolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ["s3:PutObject"],
-        resources: [evidenceBucket.bucketArn + "/*"],
+        actions: ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
+        resources: [evidenceBucket.bucketArn, evidenceBucket.bucketArn + "/*"],
       })
     );
   }
