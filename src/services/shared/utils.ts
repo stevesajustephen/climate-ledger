@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { JsonError } from "./validator";
 
 export function bodyParser(arg: string) {
@@ -7,6 +7,14 @@ export function bodyParser(arg: string) {
   } catch (error) {
     return new JsonError(error.message);
   }
+}
+
+export function addCorsHeader(arg: APIGatewayProxyResult) {
+  if (!arg.headers) {
+    arg.headers = {};
+  }
+  arg.headers["Access-Control-Allow-Origin"] = "*";
+  arg.headers["Access-Control-Allow-Methods"] = "*";
 }
 
 export function isAPartner(event: APIGatewayProxyEvent) {
