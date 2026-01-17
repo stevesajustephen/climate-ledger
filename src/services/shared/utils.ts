@@ -25,3 +25,15 @@ export function isAPartner(event: APIGatewayProxyEvent) {
   }
   return false;
 }
+
+export function getPartnerGroup(event: APIGatewayProxyEvent): string | null {
+  const groups = event.requestContext.authorizer?.claims["cognito:groups"];
+
+  if (!groups) return null;
+
+  const groupsArray = (groups as string).split(",");
+
+  const partnerGroup = groupsArray.find((g) => g.trim().startsWith("partner-"));
+
+  return partnerGroup || null;
+}
