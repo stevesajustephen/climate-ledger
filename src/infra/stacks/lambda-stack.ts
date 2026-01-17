@@ -28,7 +28,7 @@ export class LambdaStack extends Stack {
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
         },
-      }
+      },
     );
 
     // props.climateLedgerTable.grantWriteData(ingestProductionLambda);
@@ -37,12 +37,18 @@ export class LambdaStack extends Stack {
       new PolicyStatement({
         effect: Effect.ALLOW,
         resources: [props.climateLedgerTable.tableArn],
-        actions: ["dynamodb:PutItem"],
-      })
+        actions: [
+          "dynamodb:PutItem",
+          "dynamodb:Scan",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+        ],
+      }),
     );
 
     this.climateLedgerLambdaIntegration = new LambdaIntegration(
-      ingestProductionLambda
+      ingestProductionLambda,
     );
   }
 }

@@ -10,12 +10,10 @@ export async function ingestProductinData(
 ): Promise<APIGatewayProxyResult> {
   const partnerId = getPartnerGroup(event);
 
-  console.log("partenr is ", partnerId);
-
   if (!partnerId) {
     return {
-      statusCode: 401,
-      body: JSON.stringify("Not authorized!"),
+      statusCode: 403,
+      body: JSON.stringify("Forbidden: Not a registered Partner"),
     };
   }
 
@@ -54,7 +52,6 @@ export async function ingestProductinData(
       Item: item,
     }),
   );
-  console.log("result in dev is", result, item);
 
   const response: APIGatewayProxyResult = {
     statusCode: 200,
