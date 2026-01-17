@@ -22,8 +22,14 @@ export async function ingestProductinData(
   const productionData = bodyParser(event.body);
 
   validateAsIngestProdEntry(productionData);
-  const { batchId, factoryId, totalKwh, totalUnits, gridFactor } =
-    productionData;
+  const {
+    batchId,
+    factoryId,
+    totalKwh,
+    totalUnits,
+    gridFactor,
+    evidenceS3Url,
+  } = productionData;
 
   const totalCarbonFootprint = Number(totalKwh) * Number(gridFactor);
 
@@ -34,6 +40,7 @@ export async function ingestProductinData(
     total_kwh: Number(totalKwh),
     total_units: Number(totalUnits),
     grid_factor: Number(gridFactor),
+    evidence_s3_url: evidenceS3Url,
     total_carbon_kg: totalCarbonFootprint,
     created_at: new Date().toISOString(),
   };
