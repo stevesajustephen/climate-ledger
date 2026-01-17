@@ -24,4 +24,8 @@ export function validateAsIngestProdEntry(arg: any) {
   if ((arg as IngestProdEntry).totalUnits == undefined) {
     throw new MissingFieldError("totalUnits");
   }
+
+  if ((arg as IngestProdEntry).evidenceS3Url == undefined) {
+    throw new MissingFieldError("evidenceS3Url");
+  }
 }

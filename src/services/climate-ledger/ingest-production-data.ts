@@ -2,15 +2,17 @@ import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { validateAsIngestProdEntry } from "../shared/validator";
-import { bodyParser, isAPartner } from "../shared/utils";
+import { bodyParser, getPartnerGroup, isAPartner } from "../shared/utils";
 
 export async function ingestProductinData(
   event: APIGatewayProxyEvent,
-  dbClient: DynamoDBClient
+  dbClient: DynamoDBClient,
 ): Promise<APIGatewayProxyResult> {
-  const isAuthorized = isAPartner(event);
+  const partnerId = getPartnerGroup(event);
 
-  if (!isAuthorized) {
+  console.log("partenr is ", partnerId);
+
+  if (!partnerId) {
     return {
       statusCode: 401,
       body: JSON.stringify("Not authorized!"),
@@ -22,19 +24,27 @@ export async function ingestProductinData(
   const productionData = bodyParser(event.body);
 
   validateAsIngestProdEntry(productionData);
-  const { batchId, factoryId, totalKwh, totalUnits, gridFactor } =
-    productionData;
+  const {
+    batchId,
+    factoryId,
+    totalKwh,
+    totalUnits,
+    gridFactor,
+    evidenceS3Url,
+  } = productionData;
 
   const totalCarbonFootprint = Number(totalKwh) * Number(gridFactor);
 
   const item = {
     pk: `BATCH#${batchId}`,
     sk: "METADATA",
-    factory_id: factoryId,
+    factory_id: `${factoryId}`,
     total_kwh: Number(totalKwh),
     total_units: Number(totalUnits),
     grid_factor: Number(gridFactor),
+    evidence_s3_url: evidenceS3Url,
     total_carbon_kg: totalCarbonFootprint,
+    partner_id: partnerId,
     created_at: new Date().toISOString(),
   };
 
@@ -42,7 +52,7 @@ export async function ingestProductinData(
     new PutCommand({
       TableName: process.env.TABLE_NAME, // Passed from LambdaStack environment
       Item: item,
-    })
+    }),
   );
   console.log("result in dev is", result, item);
 

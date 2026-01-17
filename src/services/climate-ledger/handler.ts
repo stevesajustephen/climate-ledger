@@ -8,6 +8,8 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ingestProductinData } from "./ingest-production-data";
 import { JsonError, MissingFieldError } from "../shared/validator";
 
+import { addCorsHeader } from "../shared/utils";
+
 const dbClient = new DynamoDBClient({});
 
 async function handler(
@@ -16,6 +18,11 @@ async function handler(
 ): Promise<APIGatewayProxyResult> {
   let message: string;
 
+  let response: APIGatewayProxyResult = {
+    statusCode: 200,
+    body: "",
+  };
+
   try {
     switch (event.httpMethod) {
       case "GET": {
@@ -23,8 +30,8 @@ async function handler(
         break;
       }
       case "POST": {
-        const response = await ingestProductinData(event, dbClient);
-        return response;
+        response = await ingestProductinData(event, dbClient);
+        break;
       }
       default:
         break;
@@ -33,22 +40,20 @@ async function handler(
     console.log(error);
 
     if (error instanceof MissingFieldError) {
-      return {
+      response = {
         statusCode: 400,
         body: error?.message,
       };
     }
     if (error instanceof JsonError) {
-      return {
+      response = {
         statusCode: 400,
         body: error?.message,
       };
     }
-    return {
-      statusCode: 500,
-      body: error?.message,
-    };
   }
+  addCorsHeader(response);
+  return response;
 }
 
 export { handler };

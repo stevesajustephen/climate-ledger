@@ -4,4 +4,5 @@ export interface IngestProdEntry {
   totalKwh: number;
   totalUnits: number;
   gridFactor: number;
+  evidenceS3Url: string;
 }
