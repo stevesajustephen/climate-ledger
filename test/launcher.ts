@@ -3,7 +3,7 @@ import { handler } from "../src/services/climate-ledger/handler";
 
 handler(
   {
-    httpMethod: "POST",
+    httpMethod: "GET",
     body: JSON.stringify({
       factoryId: "ABC",
       totalKwh: 10000,
@@ -11,7 +11,7 @@ handler(
       gridFactor: 1,
     }),
   } as unknown as APIGatewayProxyEvent,
-  {} as Context
+  {} as Context,
 )
   .then((data) => {
     console.log(data);

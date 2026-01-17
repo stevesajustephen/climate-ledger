@@ -28,7 +28,6 @@ export function isAPartner(event: APIGatewayProxyEvent) {
 
 export function getPartnerGroup(event: APIGatewayProxyEvent): string | null {
   const groups = event.requestContext.authorizer?.claims["cognito:groups"];
-
   if (!groups) return null;
 
   const groupsArray = (groups as string).split(",");

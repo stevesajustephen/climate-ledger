@@ -9,12 +9,13 @@ import { ingestProductinData } from "./ingest-production-data";
 import { JsonError, MissingFieldError } from "../shared/validator";
 
 import { addCorsHeader } from "../shared/utils";
+import { listPartnerBatches } from "./get-batch-data";
 
 const dbClient = new DynamoDBClient({});
 
 async function handler(
   event: APIGatewayProxyEvent,
-  context: Context
+  context: Context,
 ): Promise<APIGatewayProxyResult> {
   let message: string;
 
@@ -26,7 +27,7 @@ async function handler(
   try {
     switch (event.httpMethod) {
       case "GET": {
-        message = "hello from get";
+        response = await listPartnerBatches(event, dbClient);
         break;
       }
       case "POST": {
