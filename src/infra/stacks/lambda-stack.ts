@@ -24,7 +24,7 @@ export class LambdaStack extends Stack {
         functionName: "climate-ledger-ingest-production",
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
-        entry: join(__dirname, "../../services/climate-ledger/handler.ts"),
+        entry: join(__dirname, "../../services/partners/handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
         },

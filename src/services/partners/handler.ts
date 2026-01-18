@@ -18,8 +18,6 @@ async function handler(
   event: APIGatewayProxyEvent,
   context: Context,
 ): Promise<APIGatewayProxyResult> {
-  let message: string;
-
   let response: APIGatewayProxyResult = {
     statusCode: 200,
     body: "",
