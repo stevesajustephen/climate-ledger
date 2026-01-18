@@ -4,30 +4,48 @@ import {
   Context,
 } from "aws-lambda";
 import { addCorsHeader } from "../shared/utils";
+import { listPartnerBatches } from "../partners/get-batch-data";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { listRetailerOrders } from "./get-retailers-orders";
+
+const dbClient = new DynamoDBClient({});
 
 async function handler(
   event: APIGatewayProxyEvent,
   context: Context,
 ): Promise<APIGatewayProxyResult> {
+  let response: APIGatewayProxyResult = {
+    statusCode: 200,
+    body: "",
+  };
   const retailerId = event.pathParameters?.retailerId;
 
-  console.log("retailer handlerrrr");
+  try {
+    const resource = event.resource;
 
-  const response: APIGatewayProxyResult = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: `Hello from the Retailer service! Connection successful for: ${retailerId}`,
-      timestamp: new Date().toISOString(),
-      requestContext: {
-        httpMethod: event.httpMethod,
-        path: event.path,
-      },
-    }),
-  };
+    switch (event.httpMethod) {
+      case "GET": {
+        console.log("inside GET of retailer handler!!!");
+        response = await listRetailerOrders(event, dbClient);
+        break;
+      }
 
-  // Ensure your shared utility adds CORS so your React app can read this
+      default:
+        response = {
+          statusCode: 405,
+          body: JSON.stringify({ message: "Method Not Allowed" }),
+        };
+        break;
+    }
+  } catch (error) {
+    console.log(error);
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({ message: "Internal Server Error" }),
+    };
+  }
+
   addCorsHeader(response);
-
   return response;
 }
 

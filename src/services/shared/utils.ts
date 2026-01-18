@@ -36,3 +36,16 @@ export function getPartnerGroup(event: APIGatewayProxyEvent): string | null {
 
   return partnerGroup || null;
 }
+
+export function getRetailerGroup(event: APIGatewayProxyEvent): string | null {
+  const groups = event.requestContext.authorizer?.claims["cognito:groups"];
+  if (!groups) return null;
+
+  const groupsArray = (groups as string).split(",");
+
+  const partnerGroup = groupsArray.find((g) =>
+    g.trim().startsWith("retailer-"),
+  );
+
+  return partnerGroup || null;
+}
