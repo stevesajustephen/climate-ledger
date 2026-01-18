@@ -29,7 +29,7 @@ export class ApiStack extends Stack {
       {
         cognitoUserPools: [props.userPool],
         identitySource: "method.request.header.authorization",
-      }
+      },
     );
 
     authorizer._attachToApi(api);
@@ -50,19 +50,31 @@ export class ApiStack extends Stack {
 
     const climateResource = api.root.addResource(
       "climate-ledger",
-      optionsWithCors
+      optionsWithCors,
+    );
+    const batchResource = climateResource.addResource("{id}");
+
+    const allocationResource = batchResource.addResource(
+      "allocations",
+      optionsWithCors,
+    );
+
+    allocationResource.addMethod(
+      "POST",
+      props.climateLedgerLambdaIntegration,
+      optionWithAuth,
     );
 
     climateResource.addMethod(
       "GET",
       props.climateLedgerLambdaIntegration,
-      optionWithAuth
+      optionWithAuth,
     );
 
     climateResource.addMethod(
       "POST",
       props.climateLedgerLambdaIntegration,
-      optionWithAuth
+      optionWithAuth,
     );
   }
 }

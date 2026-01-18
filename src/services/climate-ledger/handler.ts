@@ -10,6 +10,7 @@ import { JsonError, MissingFieldError } from "../shared/validator";
 
 import { addCorsHeader } from "../shared/utils";
 import { listPartnerBatches } from "./get-batch-data";
+import { allocateOrderToBatch } from "./allocate-order";
 
 const dbClient = new DynamoDBClient({});
 
@@ -25,31 +26,43 @@ async function handler(
   };
 
   try {
+    const resource = event.resource;
     switch (event.httpMethod) {
       case "GET": {
         response = await listPartnerBatches(event, dbClient);
         break;
       }
       case "POST": {
-        response = await ingestProductinData(event, dbClient);
+        if (resource.includes("allocations")) {
+          // Route: POST /climate-ledger/{id}/allocations
+          console.log("in allocate order handler");
+          response = await allocateOrderToBatch(event, dbClient);
+        } else {
+          // Route: POST /climate-ledger
+          response = await ingestProductinData(event, dbClient);
+        }
         break;
       }
+
       default:
+        response = {
+          statusCode: 405,
+          body: JSON.stringify({ message: "Method Not Allowed" }),
+        };
         break;
     }
   } catch (error) {
     console.log(error);
 
-    if (error instanceof MissingFieldError) {
+    if (error instanceof MissingFieldError || error instanceof JsonError) {
       response = {
         statusCode: 400,
         body: error?.message,
       };
-    }
-    if (error instanceof JsonError) {
+    } else {
       response = {
-        statusCode: 400,
-        body: error?.message,
+        statusCode: 500,
+        body: JSON.stringify({ message: "Internal Server Error" }),
       };
     }
   }
