@@ -18,5 +18,6 @@ const authStack = new AuthStack(app, "AuthStack", {
 
 new ApiStack(app, "ApiStack", {
   climateLedgerLambdaIntegration: lambdaStack.climateLedgerLambdaIntegration,
+  retailerOrdersLambdaIntegration: lambdaStack.retailerOrdersLambdaIntegration,
   userPool: authStack.getUserPool(),
 });

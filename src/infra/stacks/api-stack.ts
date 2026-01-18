@@ -14,6 +14,7 @@ import { Construct } from "constructs";
 
 interface ApiStackProps extends StackProps {
   climateLedgerLambdaIntegration: LambdaIntegration;
+  retailerOrdersLambdaIntegration: LambdaIntegration;
   userPool: IUserPool;
 }
 
@@ -53,7 +54,6 @@ export class ApiStack extends Stack {
       optionsWithCors,
     );
     const batchResource = climateResource.addResource("{id}");
-
     const allocationResource = batchResource.addResource(
       "allocations",
       optionsWithCors,
@@ -64,16 +64,28 @@ export class ApiStack extends Stack {
       props.climateLedgerLambdaIntegration,
       optionWithAuth,
     );
-
     climateResource.addMethod(
       "GET",
       props.climateLedgerLambdaIntegration,
       optionWithAuth,
     );
-
     climateResource.addMethod(
       "POST",
       props.climateLedgerLambdaIntegration,
+      optionWithAuth,
+    );
+
+    //retailer
+
+    const retailerResource = api.root.addResource("retailer", optionsWithCors);
+    const specificRetailer = retailerResource.addResource("{retailerId}");
+    const retailerOrders = specificRetailer.addResource(
+      "orders",
+      optionsWithCors,
+    );
+    retailerOrders.addMethod(
+      "GET",
+      props.retailerOrdersLambdaIntegration,
       optionWithAuth,
     );
   }

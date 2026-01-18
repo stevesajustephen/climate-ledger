@@ -11,6 +11,8 @@ async function handler(
 ): Promise<APIGatewayProxyResult> {
   const retailerId = event.pathParameters?.retailerId;
 
+  console.log("retailer handlerrrr");
+
   const response: APIGatewayProxyResult = {
     statusCode: 200,
     body: JSON.stringify({
