@@ -10,6 +10,7 @@ const dataStack = new DataStack(app, "DataStack");
 
 const lambdaStack = new LambdaStack(app, "LambdaStack", {
   climateLedgerTable: dataStack.climateLedgerTable,
+  publicDisclosuresTable: dataStack.publicDisclosuresTable,
 });
 
 const authStack = new AuthStack(app, "AuthStack", {

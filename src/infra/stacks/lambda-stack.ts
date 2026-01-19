@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 interface LambdaStackProps extends StackProps {
   climateLedgerTable: ITable;
+  publicDisclosuresTable: ITable;
 }
 
 export class LambdaStack extends Stack {
@@ -60,6 +61,7 @@ export class LambdaStack extends Stack {
         entry: join(__dirname, "../../services/retailers/handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
+          PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
         },
       },
     );
@@ -67,7 +69,10 @@ export class LambdaStack extends Stack {
     retailerOrdersLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [props.climateLedgerTable.tableArn],
+        resources: [
+          props.climateLedgerTable.tableArn,
+          props.publicDisclosuresTable.tableArn,
+        ],
         actions: [
           "dynamodb:Query",
           "dynamodb:GetItem",
