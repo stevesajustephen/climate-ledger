@@ -15,8 +15,6 @@ export async function confirmOrderReceipt(
 ): Promise<APIGatewayProxyResult> {
   const retailerId = getRetailerGroup(event);
 
-  console.log("inside get retailers ConfirmOrder ", retailerId);
-
   if (!retailerId) {
     return {
       statusCode: 403,
@@ -39,7 +37,6 @@ export async function confirmOrderReceipt(
   }
 
   try {
-    // 2. Fetch the current allocation to get weights and production carbon
     const orderCheck = await ddbDocClient.send(
       new GetCommand({
         TableName: process.env.TABLE_NAME,
@@ -67,15 +64,12 @@ export async function confirmOrderReceipt(
       };
     }
 
-    // --- LOGISTICS MATH ---
-    // Formula: (Qty * Unit Weight / 1000) * Distance * Factor
     const totalWeightTonnes =
       (Number(order.order_quantity) * Number(order.unit_weight)) / 1000;
     const transportCo2 =
       Number(distanceKm) * totalWeightTonnes * EMISSION_FACTOR_TRUCK;
     const totalImpactCo2 = Number(order.production_co2_kg) + transportCo2;
 
-    // 3. Atomic Update: Transition the state
     await ddbDocClient.send(
       new UpdateCommand({
         TableName: process.env.TABLE_NAME,
@@ -83,7 +77,6 @@ export async function confirmOrderReceipt(
           pk: `BATCH#${batchId}`,
           sk: `ALLOCATION#${orderId}`,
         },
-        // Senior Move: Ensure the item hasn't been changed by another process (Optimistic Locking)
         ConditionExpression: "#status = :expectedStatus",
         UpdateExpression: `SET 
           #status = :newStatus, 

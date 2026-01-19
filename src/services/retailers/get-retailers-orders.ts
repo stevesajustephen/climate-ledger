@@ -12,8 +12,6 @@ export async function listRetailerOrders(
 ): Promise<APIGatewayProxyResult> {
   const retailerId = getRetailerGroup(event);
 
-  console.log("inside get retailers ordersss ", retailerId);
-
   if (!retailerId) {
     return {
       statusCode: 403,

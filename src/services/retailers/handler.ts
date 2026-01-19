@@ -26,14 +26,11 @@ async function handler(
 
     switch (event.httpMethod) {
       case "GET": {
-        console.log("inside GET of retailer handler!!!");
         response = await listRetailerOrders(event, dbClient);
         break;
       }
 
       case "PATCH": {
-        console.log("Confirming order receipt...");
-        // This function handles the CO2 math and DynamoDB UpdateCommand
         response = await confirmOrderReceipt(event, dbClient);
         break;
       }

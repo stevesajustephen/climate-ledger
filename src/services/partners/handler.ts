@@ -32,11 +32,8 @@ async function handler(
       }
       case "POST": {
         if (resource.includes("allocations")) {
-          // Route: POST /climate-ledger/{id}/allocations
-          console.log("in allocate order handler");
           response = await allocateOrderToBatch(event, dbClient);
         } else {
-          // Route: POST /climate-ledger
           response = await ingestProductinData(event, dbClient);
         }
         break;

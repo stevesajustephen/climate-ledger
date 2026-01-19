@@ -88,5 +88,11 @@ export class ApiStack extends Stack {
       props.retailerOrdersLambdaIntegration,
       optionWithAuth,
     );
+
+    retailerOrders.addMethod(
+      "PATCH",
+      props.retailerOrdersLambdaIntegration,
+      optionWithAuth,
+    );
   }
 }
