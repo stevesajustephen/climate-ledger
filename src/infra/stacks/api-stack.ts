@@ -14,6 +14,7 @@ import { Construct } from "constructs";
 
 interface ApiStackProps extends StackProps {
   climateLedgerLambdaIntegration: LambdaIntegration;
+  retailerOrdersLambdaIntegration: LambdaIntegration;
   userPool: IUserPool;
 }
 
@@ -29,7 +30,7 @@ export class ApiStack extends Stack {
       {
         cognitoUserPools: [props.userPool],
         identitySource: "method.request.header.authorization",
-      }
+      },
     );
 
     authorizer._attachToApi(api);
@@ -50,19 +51,48 @@ export class ApiStack extends Stack {
 
     const climateResource = api.root.addResource(
       "climate-ledger",
-      optionsWithCors
+      optionsWithCors,
+    );
+    const batchResource = climateResource.addResource("{id}");
+    const allocationResource = batchResource.addResource(
+      "allocations",
+      optionsWithCors,
     );
 
+    allocationResource.addMethod(
+      "POST",
+      props.climateLedgerLambdaIntegration,
+      optionWithAuth,
+    );
     climateResource.addMethod(
       "GET",
       props.climateLedgerLambdaIntegration,
-      optionWithAuth
+      optionWithAuth,
     );
-
     climateResource.addMethod(
       "POST",
       props.climateLedgerLambdaIntegration,
-      optionWithAuth
+      optionWithAuth,
+    );
+
+    //retailer
+
+    const retailerResource = api.root.addResource("retailer", optionsWithCors);
+    const specificRetailer = retailerResource.addResource("{retailerId}");
+    const retailerOrders = specificRetailer.addResource(
+      "orders",
+      optionsWithCors,
+    );
+    retailerOrders.addMethod(
+      "GET",
+      props.retailerOrdersLambdaIntegration,
+      optionWithAuth,
+    );
+
+    retailerOrders.addMethod(
+      "PATCH",
+      props.retailerOrdersLambdaIntegration,
+      optionWithAuth,
     );
   }
 }

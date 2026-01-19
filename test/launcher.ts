@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
-import { handler } from "../src/services/climate-ledger/handler";
+import { handler } from "../src/services/partners/handler";
 
 handler(
   {

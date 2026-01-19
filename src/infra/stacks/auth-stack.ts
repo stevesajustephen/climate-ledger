@@ -31,7 +31,7 @@ export class AuthStack extends Stack {
 
     this.createUserPool();
     this.createUserPoolClient();
-    this.createSupplierPartnerGroup();
+    this.createUserGroups();
     this.createIdentityPool();
     this.createRole(props.evidenceBucket);
     this.attachRole();
@@ -75,10 +75,15 @@ export class AuthStack extends Stack {
     });
   }
 
-  private createSupplierPartnerGroup() {
+  private createUserGroups() {
     new CfnUserPoolGroup(this, "SupplyPartners", {
       userPoolId: this.userPool.userPoolId,
       groupName: "partner-ABC",
+    });
+
+    new CfnUserPoolGroup(this, "RetailerZalando", {
+      userPoolId: this.userPool.userPoolId,
+      groupName: "retailer-Zalando",
     });
   }
 
@@ -111,7 +116,7 @@ export class AuthStack extends Stack {
             "cognito-identity.amazonaws.com:amr": "authenticated",
           },
         },
-        "sts:AssumeRoleWithWebIdentity"
+        "sts:AssumeRoleWithWebIdentity",
       ),
     });
     this.authenticatedRole.addToPolicy(
@@ -119,7 +124,7 @@ export class AuthStack extends Stack {
         effect: Effect.ALLOW,
         actions: ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
         resources: [evidenceBucket.bucketArn, evidenceBucket.bucketArn + "/*"],
-      })
+      }),
     );
   }
 

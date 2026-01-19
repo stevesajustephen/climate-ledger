@@ -22,13 +22,13 @@ export async function listPartnerBatches(
   const ddbDocClient = DynamoDBDocumentClient.from(dbClient);
 
   try {
-    // We use Scan + FilterExpression because we aren't using an Index yet
     const result = await ddbDocClient.send(
       new DocScanCommand({
         TableName: process.env.TABLE_NAME,
-        FilterExpression: "partner_id = :pId",
+        FilterExpression: "partner_id = :pId AND sk = :skValue",
         ExpressionAttributeValues: {
           ":pId": partnerId,
+          ":skValue": "METADATA", // Provide the value here
         },
       }),
     );
