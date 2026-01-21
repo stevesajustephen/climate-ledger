@@ -15,6 +15,7 @@ import { Construct } from "constructs";
 interface ApiStackProps extends StackProps {
   climateLedgerLambdaIntegration: LambdaIntegration;
   retailerOrdersLambdaIntegration: LambdaIntegration;
+  publicReadLambdaIntegration: LambdaIntegration;
   userPool: IUserPool;
 }
 
@@ -94,5 +95,11 @@ export class ApiStack extends Stack {
       props.retailerOrdersLambdaIntegration,
       optionWithAuth,
     );
+
+    // public
+    const publicResource = api.root.addResource("disclosures", optionsWithCors);
+    const specificDisclosure = publicResource.addResource("{slug}");
+
+    specificDisclosure.addMethod("GET", props.publicReadLambdaIntegration);
   }
 }

@@ -9,12 +9,15 @@ import { join } from "node:path";
 
 interface LambdaStackProps extends StackProps {
   climateLedgerTable: ITable;
+  publicDisclosuresTable: ITable;
 }
 
 export class LambdaStack extends Stack {
   public readonly climateLedgerLambdaIntegration: LambdaIntegration;
 
   public readonly retailerOrdersLambdaIntegration: LambdaIntegration;
+
+  public readonly publicReadLambdaIntegration: LambdaIntegration;
 
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
@@ -60,6 +63,7 @@ export class LambdaStack extends Stack {
         entry: join(__dirname, "../../services/retailers/handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
+          PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
         },
       },
     );
@@ -67,7 +71,10 @@ export class LambdaStack extends Stack {
     retailerOrdersLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [props.climateLedgerTable.tableArn],
+        resources: [
+          props.climateLedgerTable.tableArn,
+          props.publicDisclosuresTable.tableArn,
+        ],
         actions: [
           "dynamodb:Query",
           "dynamodb:GetItem",
@@ -78,6 +85,25 @@ export class LambdaStack extends Stack {
       }),
     );
 
+    //public lambda
+    const publicReadLambda = new NodejsFunction(this, "PublicReadHandler", {
+      functionName: "climate-ledger-public-read",
+      runtime: Runtime.NODEJS_20_X,
+      handler: "handler",
+      entry: join(__dirname, "../../services/public/get-disclosure.ts"),
+      environment: {
+        PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
+      },
+    });
+
+    publicReadLambda.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: [props.publicDisclosuresTable.tableArn],
+        actions: ["dynamodb:GetItem"],
+      }),
+    );
+
     this.climateLedgerLambdaIntegration = new LambdaIntegration(
       ingestProductionLambda,
     );
@@ -85,5 +111,7 @@ export class LambdaStack extends Stack {
     this.retailerOrdersLambdaIntegration = new LambdaIntegration(
       retailerOrdersLambda,
     );
+
+    this.publicReadLambdaIntegration = new LambdaIntegration(publicReadLambda);
   }
 }

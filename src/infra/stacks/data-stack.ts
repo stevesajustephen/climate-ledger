@@ -10,6 +10,7 @@ import { Construct } from "constructs";
 
 export class DataStack extends Stack {
   public readonly climateLedgerTable: ITable;
+  public readonly publicDisclosuresTable: ITable;
 
   public readonly evidenceBucket: IBucket;
 
@@ -42,6 +43,14 @@ export class DataStack extends Stack {
         type: AttributeType.STRING,
       },
       tableName: "climate-ledger-table",
+    });
+
+    this.publicDisclosuresTable = new Table(this, "PublicDisclosuresTable", {
+      partitionKey: {
+        name: "slug", // Unique ID for the QR code link
+        type: AttributeType.STRING,
+      },
+      tableName: "public-disclosures-table",
     });
   }
 }

@@ -3,9 +3,11 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   UpdateCommand,
+  PutCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { bodyParser, getRetailerGroup } from "../shared/utils"; // Using your existing utility
+import { randomBytes } from "node:crypto";
 
 const EMISSION_FACTOR_TRUCK = 0.105; // kg CO2e per tonne-km
 
@@ -25,9 +27,16 @@ export async function confirmOrderReceipt(
   const ddbDocClient = DynamoDBDocumentClient.from(dbClient);
 
   const data = bodyParser(event.body);
-  const { batchId, orderId, distanceKm } = data;
 
-  if (!batchId || !orderId || distanceKm === undefined) {
+  console.log("product name added data is ", data);
+  const { batchId, orderId, distanceKm, productName } = data;
+
+  if (
+    !batchId ||
+    !orderId ||
+    distanceKm === undefined ||
+    productName === undefined
+  ) {
     return {
       statusCode: 400,
       body: JSON.stringify(
@@ -69,6 +78,7 @@ export async function confirmOrderReceipt(
     const transportCo2 =
       Number(distanceKm) * totalWeightTonnes * EMISSION_FACTOR_TRUCK;
     const totalImpactCo2 = Number(order.production_co2_kg) + transportCo2;
+    const publicSlug = randomBytes(4).toString("hex"); // R
 
     await ddbDocClient.send(
       new UpdateCommand({
@@ -83,7 +93,8 @@ export async function confirmOrderReceipt(
           transport_distance_km = :dist, 
           transport_co2_kg = :tCo2, 
           total_order_co2_kg = :total,
-          received_at = :now`,
+          received_at = :now,
+          public_slug = :slug`,
         ExpressionAttributeNames: { "#status": "status" },
         ExpressionAttributeValues: {
           ":expectedStatus": "SHIPPED",
@@ -92,6 +103,24 @@ export async function confirmOrderReceipt(
           ":tCo2": transportCo2,
           ":total": totalImpactCo2,
           ":now": new Date().toISOString(),
+          ":slug": publicSlug,
+        },
+      }),
+    );
+
+    //to disclosure table
+
+    await ddbDocClient.send(
+      new PutCommand({
+        TableName: process.env.PUBLIC_TABLE_NAME, // From your CDK environment var
+        Item: {
+          slug: publicSlug,
+          product_name: productName, // Sanitized name
+          total_co2_kg: totalImpactCo2.toFixed(4),
+          transport_co2_kg: transportCo2.toFixed(4),
+          verified_at: new Date().toISOString(),
+          origin: `${order.partner_id}`,
+          // We don't include batchId or private keys here for security
         },
       }),
     );
@@ -104,6 +133,7 @@ export async function confirmOrderReceipt(
         productionCo2: order.production_co2_kg,
         transportCo2: transportCo2.toFixed(4),
         totalCo2: totalImpactCo2.toFixed(4),
+        publicSlug: publicSlug,
       }),
     };
   } catch (error: any) {
