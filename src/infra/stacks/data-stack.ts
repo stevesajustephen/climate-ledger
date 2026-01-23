@@ -1,5 +1,10 @@
 import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
-import { AttributeType, ITable, Table } from "aws-cdk-lib/aws-dynamodb";
+import {
+  AttributeType,
+  ITable,
+  ProjectionType,
+  Table,
+} from "aws-cdk-lib/aws-dynamodb";
 import {
   BlockPublicAccess,
   Bucket,
@@ -9,7 +14,7 @@ import {
 import { Construct } from "constructs";
 
 export class DataStack extends Stack {
-  public readonly climateLedgerTable: ITable;
+  public readonly climateLedgerTable: Table;
   public readonly publicDisclosuresTable: ITable;
 
   public readonly evidenceBucket: IBucket;
@@ -43,6 +48,19 @@ export class DataStack extends Stack {
         type: AttributeType.STRING,
       },
       tableName: "climate-ledger-table",
+    });
+
+    this.climateLedgerTable.addGlobalSecondaryIndex({
+      indexName: "PartnerMetadataIndex",
+      partitionKey: {
+        name: "partner_id",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "sk",
+        type: AttributeType.STRING,
+      },
+      projectionType: ProjectionType.ALL,
     });
 
     this.publicDisclosuresTable = new Table(this, "PublicDisclosuresTable", {

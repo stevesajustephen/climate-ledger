@@ -41,13 +41,16 @@ export class LambdaStack extends Stack {
     ingestProductionLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [props.climateLedgerTable.tableArn],
+        resources: [
+          props.climateLedgerTable.tableArn,
+          `${props.climateLedgerTable.tableArn}/index/PartnerMetadataIndex`,
+        ],
         actions: [
           "dynamodb:PutItem",
           "dynamodb:Scan",
           "dynamodb:GetItem",
           "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem",
+          "dynamodb:Query",
         ],
       }),
     );

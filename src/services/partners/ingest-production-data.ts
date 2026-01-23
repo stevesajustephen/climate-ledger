@@ -1,8 +1,8 @@
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { validateAsIngestProdEntry } from "../shared/validator";
-import { bodyParser, getPartnerGroup, isAPartner } from "../shared/utils";
+import { bodyParser, getPartnerGroup } from "../shared/utils";
 
 export async function ingestProductinData(
   event: APIGatewayProxyEvent,
@@ -22,6 +22,7 @@ export async function ingestProductinData(
   const productionData = bodyParser(event.body);
 
   validateAsIngestProdEntry(productionData);
+
   const {
     batchId,
     factoryId,
@@ -46,7 +47,7 @@ export async function ingestProductinData(
     created_at: new Date().toISOString(),
   };
 
-  const result = await ddbDocClient.send(
+  await ddbDocClient.send(
     new PutCommand({
       TableName: process.env.TABLE_NAME, // Passed from LambdaStack environment
       Item: item,

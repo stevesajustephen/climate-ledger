@@ -2,6 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   ScanCommand as DocScanCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { getPartnerGroup } from "../shared/utils";
@@ -23,12 +24,13 @@ export async function listPartnerBatches(
 
   try {
     const result = await ddbDocClient.send(
-      new DocScanCommand({
+      new QueryCommand({
         TableName: process.env.TABLE_NAME,
-        FilterExpression: "partner_id = :pId AND sk = :skValue",
+        IndexName: "PartnerMetadataIndex",
+        KeyConditionExpression: "partner_id = :pId AND sk = :skValue",
         ExpressionAttributeValues: {
           ":pId": partnerId,
-          ":skValue": "METADATA", // Provide the value here
+          ":skValue": "METADATA",
         },
       }),
     );
