@@ -63,6 +63,19 @@ export class DataStack extends Stack {
       projectionType: ProjectionType.ALL,
     });
 
+    this.climateLedgerTable.addGlobalSecondaryIndex({
+      indexName: "RetailerOrdersIndex",
+      partitionKey: {
+        name: "retailer_id",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "sk",
+        type: AttributeType.STRING,
+      },
+      projectionType: ProjectionType.ALL,
+    });
+
     this.publicDisclosuresTable = new Table(this, "PublicDisclosuresTable", {
       partitionKey: {
         name: "slug", // Unique ID for the QR code link

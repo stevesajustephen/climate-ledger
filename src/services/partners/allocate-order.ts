@@ -52,22 +52,33 @@ export async function allocateOrderToBatch(
           pk: `BATCH#${batchId}`,
           sk: "METADATA",
         },
+        ProjectionExpression: "pk, partner_id, total_units, total_carbon_kg",
       }),
     );
 
     const metadata = batchCheck.Item;
 
-    if (!metadata || metadata.partner_id !== partnerId) {
+    if (!metadata) {
+      return { statusCode: 404, body: JSON.stringify("Batch not found") };
+    }
+
+    if (metadata.partner_id !== partnerId) {
       return {
-        statusCode: 404,
-        body: JSON.stringify("Batch not found or unauthorized"),
+        statusCode: 403, // Better status code for "unauthorized"
+        body: JSON.stringify("Unauthorized: This batch does not belong to you"),
       };
     }
 
-    // --- NEW LOGIC: Carbon Math ---
+    if (orderQuantity > metadata.total_units) {
+      return {
+        statusCode: 400, // Better status code for "unauthorized"
+        body: JSON.stringify("Order Quantity above production units"),
+      };
+    }
+
     // Calculate how much of the total batch carbon belongs to this specific order
-    const totalBatchUnits = Number(metadata.total_units);
-    const totalBatchCarbon = Number(metadata.total_carbon_kg);
+    const totalBatchUnits = Number(metadata.total_units) || 1;
+    const totalBatchCarbon = Number(metadata.total_carbon_kg) || 0;
 
     const productionCo2Share =
       (Number(orderQuantity) / totalBatchUnits) * totalBatchCarbon;

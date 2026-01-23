@@ -76,6 +76,7 @@ export class LambdaStack extends Stack {
         effect: Effect.ALLOW,
         resources: [
           props.climateLedgerTable.tableArn,
+          `${props.climateLedgerTable.tableArn}/index/RetailerOrdersIndex`,
           props.publicDisclosuresTable.tableArn,
         ],
         actions: [
