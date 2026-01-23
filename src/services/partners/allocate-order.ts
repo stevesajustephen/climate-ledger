@@ -69,6 +69,13 @@ export async function allocateOrderToBatch(
       };
     }
 
+    if (orderQuantity > metadata.total_units) {
+      return {
+        statusCode: 400, // Better status code for "unauthorized"
+        body: JSON.stringify("Order Quantity above production units"),
+      };
+    }
+
     // Calculate how much of the total batch carbon belongs to this specific order
     const totalBatchUnits = Number(metadata.total_units) || 1;
     const totalBatchCarbon = Number(metadata.total_carbon_kg) || 0;

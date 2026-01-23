@@ -9,10 +9,9 @@ const ddbDocClient = DynamoDBDocumentClient.from(dbClient);
 export async function handler(
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
-  // 1. Grab the slug from the URL: /disclosures/{slug}
   const slug = event.pathParameters?.slug;
 
-  console.log("In Public Disclosureeeeee");
+  console.log("In Public Disclosure");
 
   if (!slug) {
     const response: APIGatewayProxyResult = {
@@ -24,7 +23,6 @@ export async function handler(
   }
 
   try {
-    // 2. Fetch the sanitized record from the Public table
     const result = await ddbDocClient.send(
       new GetCommand({
         TableName: process.env.PUBLIC_TABLE_NAME,
@@ -43,13 +41,11 @@ export async function handler(
       return response;
     }
 
-    // 3. Return the sanitized data
     const response: APIGatewayProxyResult = {
       statusCode: 200,
       body: JSON.stringify(result.Item),
     };
 
-    // Crucial for the public browser scan to work
     addCorsHeader(response);
     return response;
   } catch (error) {

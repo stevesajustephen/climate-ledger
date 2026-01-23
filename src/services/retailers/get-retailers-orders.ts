@@ -3,6 +3,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   ScanCommand as DocScanCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { getRetailerGroup } from "../shared/utils";
 
@@ -31,17 +32,14 @@ export async function listRetailerOrders(
 
   try {
     const result = await ddbDocClient.send(
-      new DocScanCommand({
+      new QueryCommand({
         TableName: process.env.TABLE_NAME,
-        FilterExpression:
-          "retailer_id = :rId AND begins_with(sk, :skPrefix) AND #itemType = :type",
+        IndexName: "RetailerOrdersIndex",
+        KeyConditionExpression:
+          "retailer_id = :rId AND begins_with(sk, :skPrefix)",
         ExpressionAttributeValues: {
           ":rId": retailerId,
           ":skPrefix": "ALLOCATION#",
-          ":type": "ALLOCATION",
-        },
-        ExpressionAttributeNames: {
-          "#itemType": "type",
         },
       }),
     );
