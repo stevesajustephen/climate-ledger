@@ -4,6 +4,7 @@ import { Co2Calculator } from "../../../domain/services/co2-calculator.service";
 import { Allocation } from "../../../domain/entities/allocation.entity";
 import { Disclosure } from "../../../domain/entities/disclosure.entity";
 import { randomBytes } from "node:crypto";
+import { ORDER_STATUSES } from "../../../lib/constants";
 
 interface ConfirmInput {
   distanceKm: number;
@@ -45,7 +46,7 @@ export class ConfirmOrderUseCase {
     );
     if (!allocation) throw new Error("Order allocation not found");
     if (allocation.retailerId !== retailerId) throw new Error("Unauthorized");
-    if (allocation.status === "RECEIVED")
+    if (allocation.status === ORDER_STATUSES.RECEIVED)
       throw new Error("Order has already been confirmed");
 
     const totalWeightTonnes =
@@ -68,7 +69,7 @@ export class ConfirmOrderUseCase {
       allocation.unitWeight,
       allocation.productionCo2Kg,
       allocation.destination,
-      "RECEIVED",
+      ORDER_STATUSES.RECEIVED,
       input.distanceKm,
       transportCo2,
       totalCo2,

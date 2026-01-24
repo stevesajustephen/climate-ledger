@@ -1,0 +1,5 @@
+export const DYNAMODB_KEYS = {
+  BATCH_PREFIX: "BATCH#",
+  METADATA: "METADATA",
+  ALLOCATION_PREFIX: "ALLOCATION#",
+} as const;

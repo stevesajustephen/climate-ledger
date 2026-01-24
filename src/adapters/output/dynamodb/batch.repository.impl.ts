@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Batch } from "../../../domain/entities/batch.entity";
 import { BatchRepository } from "../../../domain/repositories/batch.repository";
+import { DYNAMODB_KEYS } from "../../../lib/constants";
 
 export class BatchRepositoryImpl implements BatchRepository {
   constructor(
@@ -18,8 +19,8 @@ export class BatchRepositoryImpl implements BatchRepository {
       new PutCommand({
         TableName: this.tableName,
         Item: {
-          pk: `BATCH#${batch.id}`,
-          sk: "METADATA",
+          pk: `${DYNAMODB_KEYS.BATCH_PREFIX}${batch.id}`,
+          sk: DYNAMODB_KEYS.METADATA,
           factory_id: batch.factoryId,
           total_kwh: batch.totalKwh,
           total_units: batch.totalUnits,
@@ -37,7 +38,10 @@ export class BatchRepositoryImpl implements BatchRepository {
     const result = await this.docClient.send(
       new GetCommand({
         TableName: this.tableName,
-        Key: { pk: `BATCH#${id}`, sk: "METADATA" },
+        Key: {
+          pk: `${DYNAMODB_KEYS.BATCH_PREFIX}${id}`,
+          sk: DYNAMODB_KEYS.METADATA,
+        },
       }),
     );
     if (!result.Item) return null;
