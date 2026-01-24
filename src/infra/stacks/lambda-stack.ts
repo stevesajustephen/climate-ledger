@@ -29,7 +29,7 @@ export class LambdaStack extends Stack {
         functionName: "climate-ledger-ingest-production",
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
-        entry: join(__dirname, "../../services/partners/handler.ts"),
+        entry: join(__dirname, "../../adapters/input/partners.handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
         },
@@ -63,7 +63,7 @@ export class LambdaStack extends Stack {
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
         // This points to your new service folder
-        entry: join(__dirname, "../../services/retailers/handler.ts"),
+        entry: join(__dirname, "../../adapters/input/retailers.handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
           PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
@@ -94,7 +94,7 @@ export class LambdaStack extends Stack {
       functionName: "climate-ledger-public-read",
       runtime: Runtime.NODEJS_20_X,
       handler: "handler",
-      entry: join(__dirname, "../../services/public/get-disclosure.ts"),
+      entry: join(__dirname, "../../adapters/input/public.handler.ts"),
       environment: {
         PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
       },

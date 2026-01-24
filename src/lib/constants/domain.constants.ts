@@ -1,0 +1,10 @@
+export const CO2_EMISSION_FACTORS = {
+  TRUCK_KG_CO2E_PER_TONNE_KM: 0.105,
+} as const;
+
+export const ORDER_STATUSES = {
+  SHIPPED: "SHIPPED",
+  RECEIVED: "RECEIVED",
+} as const;
+
+export const ALLOCATION_STATUS = ORDER_STATUSES;
