@@ -2,6 +2,11 @@ import { Allocation } from "../../../domain/entities/allocation.entity";
 import { BatchRepository } from "../../../domain/repositories/batch.repository";
 import { AllocationRepository } from "../../../domain/repositories/allocation.repository";
 import { Co2Calculator } from "../../../domain/services/co2-calculator.service";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../../lib/errors";
 
 interface AllocateInput {
   orderId: string;
@@ -35,11 +40,11 @@ export class AllocateOrderUseCase {
     }
 
     const batch = await this.batchRepo.getById(batchId);
-    if (!batch) throw new Error("Batch not found");
+    if (!batch) throw new NotFoundError("Batch not found");
     if (batch.partnerId !== partnerId)
-      throw new Error("Unauthorized: This batch does not belong to you");
+      throw new ForbiddenError("This batch does not belong to you");
     if (input.orderQuantity > batch.totalUnits)
-      throw new Error("Order Quantity above production units");
+      throw new BadRequestError("Order Quantity above production units");
 
     const productionCo2Share = Co2Calculator.calculateProductionShare(
       input.orderQuantity,

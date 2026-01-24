@@ -1,11 +1,13 @@
+import { ValidationError } from "./errors";
+
 // lib/validator.ts
-export class MissingFieldError extends Error {
+export class MissingFieldError extends ValidationError {
   constructor(missingField: string) {
     super(`Value for ${missingField} expected!`);
   }
 }
 
-export class JsonError extends Error {
+export class JsonError extends ValidationError {
   constructor(message: string) {
     super(message);
     this.name = "JsonError";

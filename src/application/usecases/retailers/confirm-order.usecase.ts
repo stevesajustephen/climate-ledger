@@ -5,6 +5,11 @@ import { Allocation } from "../../../domain/entities/allocation.entity";
 import { Disclosure } from "../../../domain/entities/disclosure.entity";
 import { randomBytes } from "node:crypto";
 import { ORDER_STATUSES } from "../../../lib/constants";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../../../lib/errors";
 
 interface ConfirmInput {
   distanceKm: number;
@@ -44,10 +49,12 @@ export class ConfirmOrderUseCase {
       batchId,
       orderId,
     );
-    if (!allocation) throw new Error("Order allocation not found");
-    if (allocation.retailerId !== retailerId) throw new Error("Unauthorized");
-    if (allocation.status === ORDER_STATUSES.RECEIVED)
-      throw new Error("Order has already been confirmed");
+    if (!allocation) throw new NotFoundError("Order allocation not found");
+    if (allocation.retailerId !== retailerId)
+      throw new UnauthorizedError("Unauthorized");
+    if (allocation.status === "RECEIVED") {
+      throw new BadRequestError("Order has already been confirmed and audited");
+    }
 
     const totalWeightTonnes =
       (allocation.orderQuantity * allocation.unitWeight) / 1000;
