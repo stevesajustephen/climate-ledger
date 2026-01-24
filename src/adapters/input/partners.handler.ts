@@ -3,25 +3,11 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { withErrorHandling } from "../../lib/error-handler";
 import { ForbiddenError, BadRequestError } from "../../lib/errors";
 
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-
-import { IngestProductionDataUseCase } from "../../application/usecases/partners/ingest-production-data.usecase";
-import { ListPartnerBatchesUseCase } from "../../application/usecases/partners/list-partner-batches.usecase";
-import { AllocateOrderUseCase } from "../../application/usecases/partners/allocate-order.usecase";
-
-import { BatchRepositoryImpl } from "../output/dynamodb/batch.repository.impl";
-import { AllocationRepositoryImpl } from "../output/dynamodb/allocation.repository.impl";
+import { createDependencies, AppDependencies } from "../../lib/dependencies";
 
 import { bodyParser, getPartnerGroup } from "../../lib/utils";
 
-const dbClient = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(dbClient);
-const tableName = process.env.TABLE_NAME!;
-
-const batchRepo = new BatchRepositoryImpl(docClient, tableName);
-const allocationRepo = new AllocationRepositoryImpl(docClient, tableName);
-// ──────────────────────────────────────────────────────────────
+const deps: AppDependencies = createDependencies();
 
 async function handle(
   event: APIGatewayProxyEvent,
@@ -33,8 +19,8 @@ async function handle(
 
   switch (event.httpMethod) {
     case "GET": {
-      const listUseCase = new ListPartnerBatchesUseCase(batchRepo);
-      const batches = await listUseCase.execute(partnerId);
+      const batches = await deps.listPartnerBatches.execute(partnerId);
+
       return {
         statusCode: 200,
         body: JSON.stringify(batches),
@@ -50,11 +36,11 @@ async function handle(
         }
 
         const input = bodyParser(event.body);
-        const allocateUseCase = new AllocateOrderUseCase(
-          batchRepo,
-          allocationRepo,
+        const result = await deps.allocateOrder.execute(
+          batchId,
+          input,
+          partnerId,
         );
-        const result = await allocateUseCase.execute(batchId, input, partnerId);
 
         return {
           statusCode: 201,
@@ -66,8 +52,10 @@ async function handle(
       } else {
         // Ingest production data
         const input = bodyParser(event.body);
-        const ingestUseCase = new IngestProductionDataUseCase(batchRepo);
-        const result = await ingestUseCase.execute(input, partnerId);
+        const result = await deps.ingestProductionData.execute(
+          input,
+          partnerId,
+        );
 
         return {
           statusCode: 200,
@@ -82,5 +70,4 @@ async function handle(
   }
 }
 
-// Export wrapped handler
 export const handler = withErrorHandling(handle);
