@@ -7,6 +7,8 @@ import { createDependencies, AppDependencies } from "../../lib/dependencies";
 
 import { bodyParser, getRetailerGroup } from "../../lib/utils";
 
+import { Schemas } from "../../lib/schemas";
+
 const deps: AppDependencies = createDependencies();
 
 async function handle(
@@ -28,25 +30,10 @@ async function handle(
     }
 
     case "PATCH": {
-      const data = bodyParser(event.body);
+      const rawData = bodyParser(event.body);
 
-      if (!data.batchId || !data.orderId) {
-        throw new BadRequestError(
-          "Missing required fields: batchId and/or orderId",
-        );
-      }
-
-      if (!data.distanceKm || data.distanceKm <= 0) {
-        throw new BadRequestError(
-          "distanceKm is required and must be positive",
-        );
-      }
-
-      if (!data.productName?.trim()) {
-        throw new BadRequestError("productName is required");
-      }
-
-      const { batchId, orderId, ...input } = data;
+      const validatedInput = Schemas.ConfirmOrder.parse(rawData);
+      const { batchId, orderId, ...input } = validatedInput;
 
       const result = await deps.confirmOrder.execute(
         batchId,
@@ -70,5 +57,4 @@ async function handle(
   }
 }
 
-// Export wrapped handler – all errors are now handled centrally
 export const handler = withErrorHandling(handle);

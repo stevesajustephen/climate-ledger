@@ -1,24 +1,52 @@
 import { z } from "zod";
 
-export const IngestProductionSchema = z.object({
-  batchId: z
-    .string()
-    .min(1, { message: "batchId is required and cannot be empty" }),
-  factoryId: z
-    .string()
-    .min(1, { message: "factoryId is required and cannot be empty" }),
-  totalKwh: z
-    .number()
-    .positive({ message: "totalKwh must be a positive number" }),
-  totalUnits: z
-    .number()
-    .positive({ message: "totalUnits must be a positive number" }),
-  gridFactor: z
-    .number()
-    .positive({ message: "gridFactor must be a positive number" }),
-  evidenceS3Url: z
-    .string()
-    .url({ message: "evidenceS3Url must be a valid URL" }),
+const IdSchema = z
+  .string()
+  .min(1, { message: "ID is required and cannot be empty" });
+const PositiveNumber = z
+  .number()
+  .positive({ message: "Must be a positive number" });
+const PositiveInteger = PositiveNumber.int({
+  message: "Must be a positive integer",
 });
 
-export type IngestProductionInput = z.infer<typeof IngestProductionSchema>;
+const IngestProduction = z.object({
+  batchId: IdSchema,
+  factoryId: IdSchema,
+  totalKwh: PositiveNumber,
+  totalUnits: PositiveNumber,
+  gridFactor: PositiveNumber,
+  evidenceS3Url: z.string().url({ message: "Must be a valid URL" }),
+});
+
+const AllocateOrder = z.object({
+  orderId: IdSchema,
+  retailerId: IdSchema,
+  orderQuantity: PositiveInteger,
+  unitWeight: PositiveNumber,
+  destination: z
+    .string()
+    .min(1, { message: "destination is required and cannot be empty" }),
+});
+
+const ConfirmOrder = z.object({
+  batchId: IdSchema,
+  orderId: IdSchema,
+  distanceKm: PositiveNumber,
+  productName: z
+    .string()
+    .trim()
+    .min(1, { message: "productName is required and cannot be empty" }),
+});
+
+export const Schemas = {
+  IngestProduction,
+  AllocateOrder,
+  ConfirmOrder,
+} as const;
+
+export type Schemas = {
+  IngestProduction: z.infer<typeof Schemas.IngestProduction>;
+  AllocateOrder: z.infer<typeof Schemas.AllocateOrder>;
+  ConfirmOrder: z.infer<typeof Schemas.ConfirmOrder>;
+};

@@ -6,7 +6,7 @@ import { ForbiddenError, BadRequestError } from "../../lib/errors";
 import { createDependencies, AppDependencies } from "../../lib/dependencies";
 
 import { bodyParser, getPartnerGroup } from "../../lib/utils";
-import { IngestProductionSchema } from "../../lib/schemas";
+import { Schemas } from "../../lib/schemas";
 
 const deps: AppDependencies = createDependencies();
 
@@ -36,10 +36,11 @@ async function handle(
           throw new BadRequestError("Missing batch id in path parameters");
         }
 
-        const input = bodyParser(event.body);
+        const rawInput = bodyParser(event.body);
+        const validatedInput = Schemas.AllocateOrder.parse(rawInput);
         const result = await deps.allocateOrder.execute(
           batchId,
-          input,
+          validatedInput,
           partnerId,
         );
 
@@ -51,9 +52,8 @@ async function handle(
           }),
         };
       } else {
-        // Ingest production data
         const rawBody = bodyParser(event.body);
-        const validatedInput = IngestProductionSchema.parse(rawBody);
+        const validatedInput = Schemas.IngestProduction.parse(rawBody);
         const result = await deps.ingestProductionData.execute(
           validatedInput,
           partnerId,
