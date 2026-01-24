@@ -6,6 +6,7 @@ import { ForbiddenError, BadRequestError } from "../../lib/errors";
 import { createDependencies, AppDependencies } from "../../lib/dependencies";
 
 import { bodyParser, getPartnerGroup } from "../../lib/utils";
+import { IngestProductionSchema } from "../../lib/schemas";
 
 const deps: AppDependencies = createDependencies();
 
@@ -51,9 +52,10 @@ async function handle(
         };
       } else {
         // Ingest production data
-        const input = bodyParser(event.body);
+        const rawBody = bodyParser(event.body);
+        const validatedInput = IngestProductionSchema.parse(rawBody);
         const result = await deps.ingestProductionData.execute(
-          input,
+          validatedInput,
           partnerId,
         );
 

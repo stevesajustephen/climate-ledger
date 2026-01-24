@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { addCorsHeader } from "./utils"; // your existing CORS helper
 import { AppError } from "./errors";
+import { ZodError } from "zod";
 
 type HandlerFn = (
   event: APIGatewayProxyEvent,
@@ -18,11 +19,19 @@ export function withErrorHandling(
       return result;
     } catch (err: unknown) {
       let statusCode = 500;
-      let body: { message: string; details?: unknown } = {
+      let body: { message: string; details?: unknown; issues?: unknown } = {
         message: "Internal Server Error",
       };
-
-      if (err instanceof AppError) {
+      if (err instanceof ZodError) {
+        statusCode = 400;
+        body = {
+          message: "Validation failed",
+          issues: err.issues.map((issue) => ({
+            field: issue.path.join(".") || "body",
+            message: issue.message,
+          })),
+        };
+      } else if (err instanceof AppError) {
         statusCode = err.statusCode;
         body = {
           message: err.message,

@@ -15,21 +15,17 @@ import { ConfirmOrderUseCase } from "../application/usecases/retailers/confirm-o
 import { GetDisclosureUseCase } from "../application/usecases/public/get-disclosure.usecase";
 
 export interface AppDependencies {
-  // Repositories (concrete implementations)
   batchRepo: BatchRepositoryImpl;
   allocationRepo: AllocationRepositoryImpl;
   disclosureRepo: DisclosureRepositoryImpl;
 
-  // Use cases – partners
   ingestProductionData: IngestProductionDataUseCase;
   listPartnerBatches: ListPartnerBatchesUseCase;
   allocateOrder: AllocateOrderUseCase;
 
-  // Use cases – retailers
   listRetailerOrders: ListRetailerOrdersUseCase;
   confirmOrder: ConfirmOrderUseCase;
 
-  // Use cases – public
   getDisclosure: GetDisclosureUseCase;
 }
 
@@ -48,21 +44,17 @@ export function createDependencies(): AppDependencies {
   );
 
   return {
-    // Repos
     batchRepo,
     allocationRepo,
     disclosureRepo,
 
-    // Partners
     ingestProductionData: new IngestProductionDataUseCase(batchRepo),
     listPartnerBatches: new ListPartnerBatchesUseCase(batchRepo),
     allocateOrder: new AllocateOrderUseCase(batchRepo, allocationRepo),
 
-    // Retailers
     listRetailerOrders: new ListRetailerOrdersUseCase(allocationRepo),
     confirmOrder: new ConfirmOrderUseCase(allocationRepo, disclosureRepo),
 
-    // Public
     getDisclosure: new GetDisclosureUseCase(disclosureRepo),
   };
 }
