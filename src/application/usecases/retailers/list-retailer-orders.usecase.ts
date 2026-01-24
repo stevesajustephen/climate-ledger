@@ -1,4 +1,4 @@
-import { AllocationRepository } from "../../domain/repositories/allocation.repository";
+import { AllocationRepository } from "../../../domain/repositories/allocation.repository";
 
 export class ListRetailerOrdersUseCase {
   constructor(private allocationRepo: AllocationRepository) {}

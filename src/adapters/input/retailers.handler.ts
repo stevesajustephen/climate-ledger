@@ -5,8 +5,8 @@ import {
 } from "aws-lambda";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { ListRetailerOrdersUseCase } from "../../application/usecases/list-retailer-orders.usecase";
-import { ConfirmOrderUseCase } from "../../application/usecases/confirm-order.usecase";
+import { ListRetailerOrdersUseCase } from "../../application/usecases/retailers/list-retailer-orders.usecase";
+import { ConfirmOrderUseCase } from "../../application/usecases/retailers/confirm-order.usecase";
 import { AllocationRepositoryImpl } from "../output/dynamodb/allocation.repository.impl";
 import { DisclosureRepositoryImpl } from "../output/dynamodb/disclosure.repository.impl";
 import {

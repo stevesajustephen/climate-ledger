@@ -1,4 +1,4 @@
-import { BatchRepository } from "../../domain/repositories/batch.repository";
+import { BatchRepository } from "../../../domain/repositories/batch.repository";
 
 export class ListPartnerBatchesUseCase {
   constructor(private batchRepo: BatchRepository) {}

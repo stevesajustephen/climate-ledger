@@ -1,7 +1,7 @@
-import { Batch } from "../../domain/entities/batch.entity";
-import { BatchRepository } from "../../domain/repositories/batch.repository";
-import { validateIngestProdEntry } from "../../lib/validator";
-import { Co2Calculator } from "../../domain/services/co2-calculator.service";
+import { Batch } from "../../../domain/entities/batch.entity";
+import { BatchRepository } from "../../../domain/repositories/batch.repository";
+import { validateIngestProdEntry } from "../../../lib/validator";
+import { Co2Calculator } from "../../../domain/services/co2-calculator.service";
 
 interface IngestInput {
   batchId: string;

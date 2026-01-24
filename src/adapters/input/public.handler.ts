@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { GetDisclosureUseCase } from "../../application/usecases/get-disclosure.usecase";
+import { GetDisclosureUseCase } from "../../application/usecases/public/get-disclosure.usecase";
 import { DisclosureRepositoryImpl } from "../output/dynamodb/disclosure.repository.impl";
 import { addCorsHeader } from "../../lib/utils";
 

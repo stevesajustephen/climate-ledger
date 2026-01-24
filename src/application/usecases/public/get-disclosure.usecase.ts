@@ -1,4 +1,4 @@
-import { DisclosureRepository } from "../../domain/repositories/disclosure.repository";
+import { DisclosureRepository } from "../../../domain/repositories/disclosure.repository";
 
 export class GetDisclosureUseCase {
   constructor(private disclosureRepo: DisclosureRepository) {}

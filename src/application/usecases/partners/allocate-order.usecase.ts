@@ -1,7 +1,7 @@
-import { Allocation } from "../../domain/entities/allocation.entity";
-import { BatchRepository } from "../../domain/repositories/batch.repository";
-import { AllocationRepository } from "../../domain/repositories/allocation.repository";
-import { Co2Calculator } from "../../domain/services/co2-calculator.service";
+import { Allocation } from "../../../domain/entities/allocation.entity";
+import { BatchRepository } from "../../../domain/repositories/batch.repository";
+import { AllocationRepository } from "../../../domain/repositories/allocation.repository";
+import { Co2Calculator } from "../../../domain/services/co2-calculator.service";
 
 interface AllocateInput {
   orderId: string;

@@ -1,8 +1,8 @@
-import { AllocationRepository } from "../../domain/repositories/allocation.repository";
-import { DisclosureRepository } from "../../domain/repositories/disclosure.repository";
-import { Co2Calculator } from "../../domain/services/co2-calculator.service";
-import { Allocation } from "../../domain/entities/allocation.entity";
-import { Disclosure } from "../../domain/entities/disclosure.entity";
+import { AllocationRepository } from "../../../domain/repositories/allocation.repository";
+import { DisclosureRepository } from "../../../domain/repositories/disclosure.repository";
+import { Co2Calculator } from "../../../domain/services/co2-calculator.service";
+import { Allocation } from "../../../domain/entities/allocation.entity";
+import { Disclosure } from "../../../domain/entities/disclosure.entity";
 import { randomBytes } from "node:crypto";
 
 interface ConfirmInput {

@@ -5,9 +5,9 @@ import {
 } from "aws-lambda";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { IngestProductionDataUseCase } from "../../application/usecases/ingest-production-data.usecase";
-import { ListPartnerBatchesUseCase } from "../../application/usecases/list-partner-batches.usecase";
-import { AllocateOrderUseCase } from "../../application/usecases/allocate-order.usecase";
+import { IngestProductionDataUseCase } from "../../application/usecases/partners/ingest-production-data.usecase";
+import { ListPartnerBatchesUseCase } from "../../application/usecases/partners/list-partner-batches.usecase";
+import { AllocateOrderUseCase } from "../../application/usecases/partners/allocate-order.usecase";
 import { BatchRepositoryImpl } from "../output/dynamodb/batch.repository.impl";
 import { AllocationRepositoryImpl } from "../output/dynamodb/allocation.repository.impl";
 import {
