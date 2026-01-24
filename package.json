@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -12,10 +14,13 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.159",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.8",
     "aws-cdk-lib": "^2.234.1",
     "constructs": "^10.4.4",
     "esbuild": "^0.27.2",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
