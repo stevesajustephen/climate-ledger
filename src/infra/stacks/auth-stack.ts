@@ -63,11 +63,11 @@ export class AuthStack extends Stack {
       userPoolClientName: "PartnerAppSupplier",
       oAuth: {
         flows: {
-          authorizationCodeGrant: true, // Gold standard for 2026
+          authorizationCodeGrant: true,
         },
         scopes: [OAuthScope.OPENID, OAuthScope.EMAIL, OAuthScope.PROFILE],
-        callbackUrls: ["http://localhost:5173/"], // Redirect here after login
-        logoutUrls: ["http://localhost:5173/"], // Redirect here after logout
+        callbackUrls: ["http://localhost:5173/", "http://localhost:4173/"],
+        logoutUrls: ["http://localhost:5173/", "http://localhost:4173/"],
       },
     });
     new CfnOutput(this, "ClimateLedgerClientId", {
