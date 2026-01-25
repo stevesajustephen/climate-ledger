@@ -28,7 +28,7 @@ export class DataStack extends Stack {
       cors: [
         {
           allowedMethods: [HttpMethods.GET, HttpMethods.PUT],
-          allowedOrigins: ["http://localhost:5173"],
+          allowedOrigins: ["http://localhost:5173", "http://localhost:4173"],
           allowedHeaders: ["*"],
         },
       ],
