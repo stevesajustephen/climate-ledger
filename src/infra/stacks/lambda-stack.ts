@@ -29,6 +29,7 @@ export class LambdaStack extends Stack {
         functionName: "climate-ledger-ingest-production",
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
+        memorySize: 1024,
         entry: join(__dirname, "../../adapters/input/partners.handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
@@ -62,7 +63,7 @@ export class LambdaStack extends Stack {
         functionName: "climate-ledger-retailer-orders",
         runtime: Runtime.NODEJS_20_X,
         handler: "handler",
-        // This points to your new service folder
+        memorySize: 1024,
         entry: join(__dirname, "../../adapters/input/retailers.handler.ts"),
         environment: {
           TABLE_NAME: props.climateLedgerTable?.tableName,
@@ -94,6 +95,7 @@ export class LambdaStack extends Stack {
       functionName: "climate-ledger-public-read",
       runtime: Runtime.NODEJS_20_X,
       handler: "handler",
+      memorySize: 1024,
       entry: join(__dirname, "../../adapters/input/public.handler.ts"),
       environment: {
         PUBLIC_TABLE_NAME: props.publicDisclosuresTable?.tableName,
