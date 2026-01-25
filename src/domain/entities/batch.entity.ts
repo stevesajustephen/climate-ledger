@@ -9,5 +9,6 @@ export class Batch {
     public readonly partnerId: string,
     public readonly totalCarbonKg: number, // Calculated
     public readonly createdAt: string = new Date().toISOString(),
+    public readonly remainingUnits: number = totalUnits,
   ) {}
 }
