@@ -7,6 +7,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from "../../../lib/errors";
+import { Batch } from "../../../domain/entities/batch.entity";
 
 interface AllocateInput {
   orderId: string;
@@ -43,8 +44,11 @@ export class AllocateOrderUseCase {
     if (!batch) throw new NotFoundError("Batch not found");
     if (batch.partnerId !== partnerId)
       throw new ForbiddenError("This batch does not belong to you");
-    if (input.orderQuantity > batch.totalUnits)
-      throw new BadRequestError("Order Quantity above production units");
+    if (input.orderQuantity > batch.remainingUnits) {
+      throw new BadRequestError(
+        `Order quantity (${input.orderQuantity}) exceeds remaining units (${batch.remainingUnits})`,
+      );
+    }
 
     const productionCo2Share = Co2Calculator.calculateProductionShare(
       input.orderQuantity,
@@ -63,6 +67,21 @@ export class AllocateOrderUseCase {
       "SHIPPED",
     );
     await this.allocationRepo.save(allocation);
+
+    const updatedBatch = new Batch(
+      batch.id,
+      batch.factoryId,
+      batch.totalKwh,
+      batch.totalUnits,
+      batch.gridFactor,
+      batch.evidenceS3Url,
+      batch.partnerId,
+      batch.totalCarbonKg,
+      batch.createdAt,
+      batch.remainingUnits - input.orderQuantity,
+    );
+
+    await this.batchRepo.update(updatedBatch);
     return { orderId: input.orderId, calculatedCo2: productionCo2Share };
   }
 }

@@ -3,6 +3,7 @@ import {
   PutCommand,
   GetCommand,
   QueryCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { Batch } from "../../../domain/entities/batch.entity";
 import { BatchRepository } from "../../../domain/repositories/batch.repository";
@@ -29,6 +30,7 @@ export class BatchRepositoryImpl implements BatchRepository {
           total_carbon_kg: batch.totalCarbonKg,
           partner_id: batch.partnerId,
           created_at: batch.createdAt,
+          remaining_units: batch.remainingUnits,
         },
       }),
     );
@@ -55,6 +57,7 @@ export class BatchRepositoryImpl implements BatchRepository {
       result.Item.partner_id,
       result.Item.total_carbon_kg,
       result.Item.created_at,
+      result.Item.remaining_units ?? result.Item.total_units,
     );
   }
 
@@ -82,7 +85,24 @@ export class BatchRepositoryImpl implements BatchRepository {
           item.partner_id,
           item.total_carbon_kg,
           item.created_at,
+          item.remaining_units ?? item.total_units,
         ),
+    );
+  }
+
+  async update(batch: Batch): Promise<void> {
+    await this.docClient.send(
+      new UpdateCommand({
+        TableName: this.tableName,
+        Key: {
+          pk: `BATCH#${batch.id}`,
+          sk: "METADATA",
+        },
+        UpdateExpression: "SET remaining_units = :remaining",
+        ExpressionAttributeValues: {
+          ":remaining": batch.remainingUnits,
+        },
+      }),
     );
   }
 }
