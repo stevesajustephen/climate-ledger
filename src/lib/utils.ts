@@ -1,4 +1,3 @@
-// lib/utils.ts
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { JsonError } from "./validator";
 
