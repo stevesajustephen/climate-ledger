@@ -1,5 +1,3 @@
-// src/lib/errors.ts
-
 export class AppError extends Error {
   constructor(
     public readonly statusCode: number,
@@ -11,7 +9,6 @@ export class AppError extends Error {
   }
 }
 
-// Common specific errors (you can throw these directly)
 export class BadRequestError extends AppError {
   constructor(message: string = "Bad Request", details?: unknown) {
     super(400, message, details);
