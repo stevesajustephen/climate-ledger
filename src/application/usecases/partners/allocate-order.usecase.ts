@@ -28,7 +28,6 @@ export class AllocateOrderUseCase {
     input: AllocateInput,
     partnerId: string,
   ): Promise<{ orderId: string; calculatedCo2: number }> {
-    // Basic validation (more can be added)
     if (
       !batchId ||
       !input.orderId ||
