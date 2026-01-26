@@ -1,6 +1,5 @@
 import { ValidationError } from "./errors";
 
-// lib/validator.ts
 export class MissingFieldError extends ValidationError {
   constructor(missingField: string) {
     super(`Value for ${missingField} expected!`);
@@ -23,5 +22,3 @@ export function validateIngestProdEntry(arg: any): void {
   if (arg.evidenceS3Url === undefined)
     throw new MissingFieldError("evidenceS3Url");
 }
-
-// You can add more validators here later, e.g. for allocate-order, confirm-order, etc.
