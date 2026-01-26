@@ -24,6 +24,8 @@ export class IngestProductionDataUseCase {
       input.totalKwh,
       input.gridFactor,
     );
+
+    // validation for batched ID
     const batch = new Batch(
       input.batchId,
       input.factoryId,

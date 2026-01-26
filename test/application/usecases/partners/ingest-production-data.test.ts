@@ -6,6 +6,7 @@ const mockBatchRepo: jest.Mocked<BatchRepository> = {
   save: jest.fn().mockResolvedValue(undefined),
   getById: jest.fn(),
   listByPartner: jest.fn(),
+  update: jest.fn(),
 };
 
 describe("IngestProductionDataUseCase", () => {
