@@ -20,12 +20,16 @@ export class IngestProductionDataUseCase {
     partnerId: string,
   ): Promise<{ id: string }> {
     validateIngestProdEntry(input);
+
+    const existing = await this.batchRepo.getById(input.batchId);
+    if (existing) {
+      throw new Error(`Conflict: Batch ID ${input.batchId} already exists.`);
+    }
     const totalCarbonKg = Co2Calculator.calculateBatchTotal(
       input.totalKwh,
       input.gridFactor,
     );
 
-    // validation for batched ID
     const batch = new Batch(
       input.batchId,
       input.factoryId,
