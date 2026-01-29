@@ -72,6 +72,8 @@ export class LambdaStack extends Stack {
       },
     );
 
+    // excel processor lambda. s3-trigger
+
     retailerOrdersLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
