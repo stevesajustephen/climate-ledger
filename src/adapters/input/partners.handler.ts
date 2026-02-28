@@ -1,10 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-
 import { withErrorHandling } from "../../lib/error-handler";
 import { ForbiddenError, BadRequestError } from "../../lib/errors";
-
 import { createDependencies, AppDependencies } from "../../lib/dependencies";
-
 import { bodyParser, getPartnerGroup } from "../../lib/utils";
 import { Schemas } from "../../lib/schemas";
 
