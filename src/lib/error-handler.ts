@@ -20,12 +20,12 @@ export function withErrorHandling(
     } catch (err: unknown) {
       let statusCode = 500;
       let body: { message: string; details?: unknown; issues?: unknown } = {
-        message: "Internal Server Error",
+        message: "Internal Server Error Occured.",
       };
       if (err instanceof ZodError) {
         statusCode = 400;
         body = {
-          message: "Validation failed",
+          message: "Validation failed.",
           issues: err.issues.map((issue) => ({
             field: issue.path.join(".") || "body",
             message: issue.message,
@@ -38,9 +38,9 @@ export function withErrorHandling(
           ...(err.details && { details: err.details }),
         };
       } else if (err instanceof Error) {
-        console.error(err.message, err.stack);
+        console.error("error: ", err.message, err.stack);
       } else {
-        console.error(String(err));
+        console.error(String(err), "error:");
       }
 
       const response: APIGatewayProxyResult = {
