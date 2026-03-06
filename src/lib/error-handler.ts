@@ -38,7 +38,7 @@ export function withErrorHandling(
           ...(err.details && { details: err.details }),
         };
       } else if (err instanceof Error) {
-        console.error(err.message, err.stack);
+        console.error("error: ", err.message, err.stack);
       } else {
         console.error(String(err), "error:");
       }
