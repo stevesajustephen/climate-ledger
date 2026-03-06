@@ -14,6 +14,5 @@
 //   {} as Context,
 // )
 //   .then((data) => {
-//     console.log(data);
 //   })
 //   .catch((err) => console.log("error is ", err));

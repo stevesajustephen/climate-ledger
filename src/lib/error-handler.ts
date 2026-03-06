@@ -40,7 +40,7 @@ export function withErrorHandling(
       } else if (err instanceof Error) {
         console.error(err.message, err.stack);
       } else {
-        console.error(String(err));
+        console.error(String(err), "error:");
       }
 
       const response: APIGatewayProxyResult = {
